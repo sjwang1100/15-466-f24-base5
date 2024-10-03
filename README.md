@@ -1,8 +1,8 @@
-# (TODO: your game's title)
+# Tower of Hamburg
 
-Author: (TODO: your name)
+Author: Shao-Ju Wang
 
-Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
+Design: This game uses WalkMesh to walk on rough terrain. You need to find as much ingredient
 
 Screen Shot:
 
@@ -10,9 +10,12 @@ Screen Shot:
 
 How To Play:
 
-(TODO: describe the controls and (if needed) goals/strategy.)
+WASD to control burger. Approach ingredient to collect them.
 
-Sources: (TODO: list a source URL for any assets you did not create yourself. Make sure you have a license for the asset.)
+Sources: Source Code from Prof. Jim McCann
+
+Bug: 1. After some add_ingredient, the position becomes higher (looks dettached from the WalkMesh)
+	2. After some add_ingredient, the height of burger becomes outrageously tall
 
 This game was built with [NEST](NEST.md).
 

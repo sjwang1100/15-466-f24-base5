@@ -418,7 +418,7 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		drawable.pipeline.start = mesh.start;
 		drawable.pipeline.count = mesh.count;
 		//drawable.transform->parent = player.transform;
-		drawable.transform->position = glm::vec3(rand_x, rand_y, max_height);
+		drawable.transform->position = glm::vec3(rand_x, rand_y, 0.4f);
 		ingredients.push_back({ drawable.transform , Patty, walkmesh->nearest_walk_point(drawable.transform->position) });
 		break;
 	}
@@ -434,12 +434,13 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		drawable.pipeline.type = mesh.type;
 		drawable.pipeline.start = mesh.start;
 		drawable.pipeline.count = mesh.count;
-		drawable.transform->position = glm::vec3(rand_x, rand_y, max_height);
+		drawable.transform->position = glm::vec3(rand_x, rand_y,0.4f);
 		
 		ingredients.push_back({ drawable.transform , Cheese, walkmesh->nearest_walk_point(drawable.transform->position) });
 		break;
 	}
 	case Veggies: {
+		std::cout << Veggies << std::endl;
 		Mesh mesh = veggies_meshes->lookup("Plane");
 
 		auto newTrans = new Scene::Transform();
@@ -447,11 +448,11 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		Scene::Drawable& drawable = scene.drawables.back();
 
 		drawable.pipeline = lit_color_texture_program_pipeline;
-		drawable.pipeline.vao = cheese_meshes_for_lit_color_texture_program;
+		drawable.pipeline.vao = veggies_meshes_for_lit_color_texture_program;
 		drawable.pipeline.type = mesh.type;
 		drawable.pipeline.start = mesh.start;
 		drawable.pipeline.count = mesh.count;
-		drawable.transform->position = glm::vec3(rand_x, rand_y, max_height);
+		drawable.transform->position = glm::vec3(rand_x, rand_y, 0.4f);
 		//drawable.transform->parent = player.transform;.
 		ingredients.push_back({ drawable.transform , Veggies, walkmesh->nearest_walk_point(drawable.transform->position) });
 		break;

@@ -25,7 +25,7 @@ struct PlayMode : Mode {
 		Veggies
 	};
 
-	const float height[3] = { 0.06f, 0.005f, 0.0005f };
+	const float height[3] = { 0.06f, 0.015f, 0.018f };
 
 	//----- game state -----
 
