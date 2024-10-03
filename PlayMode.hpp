@@ -17,6 +17,16 @@ struct PlayMode : Mode {
 	virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
+	enum ingredient_list {
+		Patty,
+		Cheese,
+		Veggies
+	};
+
+	const float patty_height = 0.06f;
+	const float cheese_height = 0.005f;
+	const float veggies_height = 0.0005f;
+
 	//----- game state -----
 
 	//input tracking:
@@ -27,6 +37,11 @@ struct PlayMode : Mode {
 
 	//local copy of the game scene (so code can change it during gameplay):
 	Scene scene;
+
+	void put_food_randomly();
+	void add_walk_mesh(uint8_t n = 3);
+
+	Scene::Transform* l_bun = nullptr;
 
 	//player info:
 	struct Player {

@@ -15,39 +15,125 @@
 
 GLuint phonebank_meshes_for_lit_color_texture_program = 0;
 Load< MeshBuffer > phonebank_meshes(LoadTagDefault, []() -> MeshBuffer const * {
-	MeshBuffer const *ret = new MeshBuffer(data_path("phone-bank.pnct"));
+	MeshBuffer const *ret = new MeshBuffer(data_path("lower_bun.pnct"));
 	phonebank_meshes_for_lit_color_texture_program = ret->make_vao_for_program(lit_color_texture_program->program);
 	return ret;
 });
 
-Load< Scene > phonebank_scene(LoadTagDefault, []() -> Scene const * {
-	return new Scene(data_path("phone-bank.scene"), [&](Scene &scene, Scene::Transform *transform, std::string const &mesh_name){
-		Mesh const &mesh = phonebank_meshes->lookup(mesh_name);
-
-		scene.drawables.emplace_back(transform);
-		Scene::Drawable &drawable = scene.drawables.back();
-
-		drawable.pipeline = lit_color_texture_program_pipeline;
-
-		drawable.pipeline.vao = phonebank_meshes_for_lit_color_texture_program;
-		drawable.pipeline.type = mesh.type;
-		drawable.pipeline.start = mesh.start;
-		drawable.pipeline.count = mesh.count;
-
-	});
+GLuint cheese_meshes_for_lit_color_texture_program = 0;
+Load< MeshBuffer > cheese_meshes(LoadTagDefault, []() -> MeshBuffer const* {
+	MeshBuffer const* ret = new MeshBuffer(data_path("cheese.pnct"));
+	cheese_meshes_for_lit_color_texture_program = ret->make_vao_for_program(lit_color_texture_program->program);
+	return ret;
 });
+
+GLuint patty_meshes_for_lit_color_texture_program = 0;
+Load< MeshBuffer > patty_meshes(LoadTagDefault, []() -> MeshBuffer const* {
+	MeshBuffer const* ret = new MeshBuffer(data_path("patty.pnct"));
+	patty_meshes_for_lit_color_texture_program = ret->make_vao_for_program(lit_color_texture_program->program);
+	return ret;
+});
+
+GLuint u_bun_meshes_for_lit_color_texture_program = 0;
+Load< MeshBuffer > upper_bun_meshes(LoadTagDefault, []() -> MeshBuffer const* {
+	MeshBuffer const* ret = new MeshBuffer(data_path("upper_bun.pnct"));
+	u_bun_meshes_for_lit_color_texture_program = ret->make_vao_for_program(lit_color_texture_program->program);
+	return ret;
+});
+
+GLuint veggies_meshes_for_lit_color_texture_program = 0;
+Load< MeshBuffer > veggies_meshes(LoadTagDefault, []() -> MeshBuffer const* {
+	MeshBuffer const* ret = new MeshBuffer(data_path("veggies.pnct"));
+	veggies_meshes_for_lit_color_texture_program = ret->make_vao_for_program(lit_color_texture_program->program);
+	return ret;
+});
+
+GLuint wm_meshes_for_lit_color_texture_program = 0;
+Load< MeshBuffer > wm_meshes(LoadTagDefault, []() -> MeshBuffer const* {
+	MeshBuffer const* ret = new MeshBuffer(data_path("walkmesh.pnct"));
+	wm_meshes_for_lit_color_texture_program = ret->make_vao_for_program(lit_color_texture_program->program);
+	return ret;
+});
+
+Load< Scene > phonebank_scene(LoadTagDefault, []() -> Scene const* {
+	return new Scene(data_path("empty.scene"), [&](Scene& scene, Scene::Transform* transform, std::string const& mesh_name) {
+		});
+});
+
+//Load< Scene > phonebank_scene(LoadTagDefault, []() -> Scene const * {
+//	return new Scene(data_path("phone-bank.scene"), [&](Scene &scene, Scene::Transform *transform, std::string const &mesh_name){
+//		Mesh const &mesh = phonebank_meshes->lookup(mesh_name);
+//
+//		scene.drawables.emplace_back(transform);
+//		Scene::Drawable &drawable = scene.drawables.back();
+//
+//		drawable.pipeline = lit_color_texture_program_pipeline;
+//
+//		drawable.pipeline.vao = phonebank_meshes_for_lit_color_texture_program;
+//		drawable.pipeline.type = mesh.type;
+//		drawable.pipeline.start = mesh.start;
+//		drawable.pipeline.count = mesh.count;
+//
+//	});
+//});
 
 WalkMesh const *walkmesh = nullptr;
 Load< WalkMeshes > phonebank_walkmeshes(LoadTagDefault, []() -> WalkMeshes const * {
-	WalkMeshes *ret = new WalkMeshes(data_path("phone-bank.w"));
-	walkmesh = &ret->lookup("WalkMesh");
+	WalkMeshes *ret = new WalkMeshes(data_path("walkmesh.w"));
+	walkmesh = &ret->lookup("Plane.001");
 	return ret;
 });
 
 PlayMode::PlayMode() : scene(*phonebank_scene) {
-	//create a player transform:
-	scene.transforms.emplace_back();
-	player.transform = &scene.transforms.back();
+	Mesh mesh1 = wm_meshes->lookup("Plane.001");
+
+	auto newTrans1 = new Scene::Transform();
+	scene.drawables.emplace_back(newTrans1);
+	Scene::Drawable& drawable1 = scene.drawables.back();
+
+	drawable1.pipeline = lit_color_texture_program_pipeline;
+	drawable1.pipeline.vao = wm_meshes_for_lit_color_texture_program;
+	drawable1.pipeline.type = mesh1.type;
+	drawable1.pipeline.start = mesh1.start;
+	drawable1.pipeline.count = mesh1.count;
+
+	drawable1.transform->position = glm::vec3(1.0f, 0.0f, -0.5f);
+
+	add_walk_mesh();
+	{
+		Mesh mesh = phonebank_meshes->lookup("Sphere");
+
+		auto newTrans = new Scene::Transform();
+		scene.drawables.emplace_back(newTrans);
+		Scene::Drawable& drawable = scene.drawables.back();
+
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.vao = phonebank_meshes_for_lit_color_texture_program;
+		drawable.pipeline.type = mesh.type;
+		drawable.pipeline.start = mesh.start;
+		drawable.pipeline.count = mesh.count;
+		drawable.transform->position = glm::vec3(-2.5f, 0.0f, 1.4f);
+		drawable.transform->rotation *= glm::angleAxis(
+			glm::radians(-90.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f));
+
+		//create a player transform:
+		//scene.transforms.emplace_back();
+		player.transform = drawable.transform;// &scene.transforms.back();
+	}
+	Mesh mesh = upper_bun_meshes->lookup("Sphere");
+
+	auto newTrans = new Scene::Transform();
+	scene.drawables.emplace_back(newTrans);
+	Scene::Drawable& drawable = scene.drawables.back();
+
+	drawable.pipeline = lit_color_texture_program_pipeline;
+	drawable.pipeline.vao = u_bun_meshes_for_lit_color_texture_program;
+	drawable.pipeline.type = mesh.type;
+	drawable.pipeline.start = mesh.start;
+	drawable.pipeline.count = mesh.count;
+	drawable.transform->parent = player.transform;
+	drawable.transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	//create a player camera attached to a child of the player transform:
 	scene.transforms.emplace_back();
@@ -58,7 +144,7 @@ PlayMode::PlayMode() : scene(*phonebank_scene) {
 	player.camera->transform->parent = player.transform;
 
 	//player's eyes are 1.8 units above the ground:
-	player.camera->transform->position = glm::vec3(0.0f, 0.0f, 1.8f);
+	player.camera->transform->position = glm::vec3(0.0f, -1.0f, 0.3f);
 
 	//rotate camera facing direction (-z) to player facing direction (+y):
 	player.camera->transform->rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -284,4 +370,35 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 	}
 	GL_ERRORS();
+}
+
+
+void PlayMode::put_food_randomly() {
+	return;
+}
+
+void PlayMode::add_walk_mesh(uint8_t n) {
+	Mesh mesh = wm_meshes->lookup("Plane.001");
+		
+	for (; n > 0; n--) {
+		auto newTrans = new Scene::Transform();
+		scene.drawables.emplace_back(newTrans);
+		Scene::Drawable& drawable = scene.drawables.back();
+
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.vao = wm_meshes_for_lit_color_texture_program;
+		drawable.pipeline.type = mesh.type;
+		drawable.pipeline.start = mesh.start;
+		drawable.pipeline.count = mesh.count;
+
+		drawable.transform->position = glm::vec3(n * 10.0f, 0.0f, -0.5f);
+
+		if (n % 2) {
+			drawable.transform->rotation *= glm::angleAxis(
+				glm::radians(180.0f),
+				glm::vec3(0.0f, 0.0f, 1.0f));
+			// The origin of the mesh is not the "center" of the mesh, offsetting
+			drawable.transform->position = glm::vec3(n * 10.0f + 6.0f, 0.0f, -0.5f);
+		}
+	}
 }
