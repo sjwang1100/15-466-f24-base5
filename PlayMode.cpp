@@ -123,22 +123,23 @@ PlayMode::PlayMode() : scene(*phonebank_scene) {
 		//scene.transforms.emplace_back();
 		player.transform = drawable.transform;// &scene.transforms.back();
 	}
-	Mesh mesh = upper_bun_meshes->lookup("Sphere");
+	{
+		Mesh mesh = upper_bun_meshes->lookup("Sphere");
 
-	auto newTrans = new Scene::Transform();
-	scene.drawables.emplace_back(newTrans);
-	Scene::Drawable& drawable = scene.drawables.back();
+		auto newTrans = new Scene::Transform();
+		scene.drawables.emplace_back(newTrans);
+		Scene::Drawable& drawable = scene.drawables.back();
 
-	drawable.pipeline = lit_color_texture_program_pipeline;
-	drawable.pipeline.vao = u_bun_meshes_for_lit_color_texture_program;
-	drawable.pipeline.type = mesh.type;
-	drawable.pipeline.start = mesh.start;
-	drawable.pipeline.count = mesh.count;
-	drawable.transform->parent = player.transform;
-	drawable.transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.vao = u_bun_meshes_for_lit_color_texture_program;
+		drawable.pipeline.type = mesh.type;
+		drawable.pipeline.start = mesh.start;
+		drawable.pipeline.count = mesh.count;
+		drawable.transform->parent = player.transform;
+		drawable.transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	u_bun = drawable.transform;
-
+		u_bun = drawable.transform;
+	}
 	put_food_randomly();
 	
 
@@ -159,7 +160,7 @@ PlayMode::PlayMode() : scene(*phonebank_scene) {
 	//start player walking at nearest walk point:
 	player.at = walkmesh->nearest_walk_point(player.transform->position);
 
-	//put_food_randomly();
+	put_food_randomly();
 }
 
 PlayMode::~PlayMode() {
@@ -303,7 +304,7 @@ void PlayMode::update(float elapsed) {
 				if (player.transform->position.y > (i.ingre->position.y - 0.2f) && player.transform->position.y < (i.ingre->position.y + 0.2f)) {
 					put_ingre_to_burger(x);
 					put_food_randomly();
-					break;
+					break;	//put_food can be called multiple times.
 				}
 			}
 			x++;
@@ -477,6 +478,7 @@ void PlayMode::put_ingre_to_burger(uint8_t index) {
 	ingredients[index].ingre->position = glm::vec3(0.0f, 0.0f, max_height+height[ingredients[index].index]);
 	max_height += height[ingredients[index].index];
 	u_bun->position = glm::vec3(0.0f, 0.0f, max_height);
+	player.camera->transform->position = glm::vec3(0.0f, -1.0f, max_height+ 0.3f);
 }
 
 void PlayMode::add_walk_mesh(uint8_t n) {
