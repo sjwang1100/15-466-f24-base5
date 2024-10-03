@@ -140,6 +140,7 @@ PlayMode::PlayMode() : scene(*phonebank_scene) {
 	u_bun = drawable.transform;
 
 	put_food_randomly();
+	
 
 	//create a player camera attached to a child of the player transform:
 	scene.transforms.emplace_back();
@@ -158,6 +159,7 @@ PlayMode::PlayMode() : scene(*phonebank_scene) {
 	//start player walking at nearest walk point:
 	player.at = walkmesh->nearest_walk_point(player.transform->position);
 
+	//put_food_randomly();
 }
 
 PlayMode::~PlayMode() {
@@ -301,6 +303,7 @@ void PlayMode::update(float elapsed) {
 				if (player.transform->position.y > (i.ingre->position.y - 0.2f) && player.transform->position.y < (i.ingre->position.y + 0.2f)) {
 					put_ingre_to_burger(x);
 					put_food_randomly();
+					break;
 				}
 			}
 			x++;
@@ -393,9 +396,15 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	GL_ERRORS();
 }
 
-
+//unsigned int temp = static_cast<unsigned int>(std::time(nullptr));
+std::mt19937 rng(std::random_device{}());
 void PlayMode::put_food_randomly(uint16_t ingre_index) {
-	std::mt19937 rng(static_cast<unsigned int>(std::time(nullptr)));
+	// avoid two calls are too close (not working)
+	/*while ((static_cast<unsigned int>(std::time(nullptr)) - temp) < 1) {
+		continue;
+	}*/
+	//temp = static_cast<unsigned int>(std::time(nullptr));
+	//std::mt19937 rng(temp);
 	std::uniform_real_distribution<float> distx(-2.5f, 7.5f);
 	std::uniform_real_distribution<float> disty(-2.5f, 2.5f);
 	std::uniform_int_distribution<uint16_t> ing(0, 2);
@@ -417,8 +426,8 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		drawable.pipeline.type = mesh.type;
 		drawable.pipeline.start = mesh.start;
 		drawable.pipeline.count = mesh.count;
-		//drawable.transform->parent = player.transform;
 		drawable.transform->position = glm::vec3(rand_x, rand_y, 0.4f);
+
 		ingredients.push_back({ drawable.transform , Patty, walkmesh->nearest_walk_point(drawable.transform->position) });
 		break;
 	}
@@ -440,7 +449,6 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		break;
 	}
 	case Veggies: {
-		std::cout << Veggies << std::endl;
 		Mesh mesh = veggies_meshes->lookup("Plane");
 
 		auto newTrans = new Scene::Transform();

@@ -56,6 +56,7 @@ struct PlayMode : Mode {
 
 	std::vector< Ingredient> ingredients;
 
+
 	//player info:
 	struct Player {
 		WalkPoint at;
