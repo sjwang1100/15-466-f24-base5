@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <deque>
+#include <random>
+#include <ctime>
 
 struct PlayMode : Mode {
 	PlayMode();
@@ -23,9 +25,7 @@ struct PlayMode : Mode {
 		Veggies
 	};
 
-	const float patty_height = 0.06f;
-	const float cheese_height = 0.005f;
-	const float veggies_height = 0.0005f;
+	const float height[3] = { 0.06f, 0.005f, 0.0005f };
 
 	//----- game state -----
 
@@ -38,10 +38,23 @@ struct PlayMode : Mode {
 	//local copy of the game scene (so code can change it during gameplay):
 	Scene scene;
 
-	void put_food_randomly();
+	// index of 0xFF means random
+	void put_food_randomly(uint16_t ingre_index = 0xFFFF);
+	
 	void add_walk_mesh(uint8_t n = 3);
+	float max_height = 0.0f;
+	void put_ingre_to_burger(uint8_t index);
 
 	Scene::Transform* l_bun = nullptr;
+	Scene::Transform* u_bun = nullptr;
+
+	struct Ingredient {
+		Scene::Transform* ingre = nullptr;
+		uint8_t index;
+		WalkPoint x;
+	};
+
+	std::vector< Ingredient> ingredients;
 
 	//player info:
 	struct Player {

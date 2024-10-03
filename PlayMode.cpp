@@ -12,6 +12,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <random>
+#include <ctime>
 
 GLuint phonebank_meshes_for_lit_color_texture_program = 0;
 Load< MeshBuffer > phonebank_meshes(LoadTagDefault, []() -> MeshBuffer const * {
@@ -100,6 +101,7 @@ PlayMode::PlayMode() : scene(*phonebank_scene) {
 	drawable1.transform->position = glm::vec3(1.0f, 0.0f, -0.5f);
 
 	add_walk_mesh();
+
 	{
 		Mesh mesh = phonebank_meshes->lookup("Sphere");
 
@@ -134,6 +136,10 @@ PlayMode::PlayMode() : scene(*phonebank_scene) {
 	drawable.pipeline.count = mesh.count;
 	drawable.transform->parent = player.transform;
 	drawable.transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	u_bun = drawable.transform;
+
+	put_food_randomly();
 
 	//create a player camera attached to a child of the player transform:
 	scene.transforms.emplace_back();
@@ -289,6 +295,17 @@ void PlayMode::update(float elapsed) {
 		//update player's position to respect walking:
 		player.transform->position = walkmesh->to_world_point(player.at);
 
+		uint8_t x = 0;
+		for (Ingredient i : ingredients) {
+			if (player.transform->position.x > (i.ingre->position.x - 0.2f) && player.transform->position.x < (i.ingre->position.x + 0.2f)) {
+				if (player.transform->position.y > (i.ingre->position.y - 0.2f) && player.transform->position.y < (i.ingre->position.y + 0.2f)) {
+					put_ingre_to_burger(x);
+					put_food_randomly();
+				}
+			}
+			x++;
+		}
+
 		{ //update player's rotation to respect local (smooth) up-vector:
 			
 			glm::quat adjust = glm::rotation(
@@ -368,13 +385,89 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 			glm::vec3(-aspect + 0.1f * H + ofs, -1.0 + + 0.1f * H + ofs, 0.0),
 			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
 			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
+		lines.draw_text("Height: " + std::to_string(max_height*10),
+			glm::vec3(-aspect + 0.1f * H + ofs, /*-1.0 + + 0.1f * H + ofs*/0.9, 0.0),
+			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
+			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 	}
 	GL_ERRORS();
 }
 
 
-void PlayMode::put_food_randomly() {
+void PlayMode::put_food_randomly(uint16_t ingre_index) {
+	std::mt19937 rng(static_cast<unsigned int>(std::time(nullptr)));
+	std::uniform_real_distribution<float> distx(-2.5f, 7.5f);
+	std::uniform_real_distribution<float> disty(-2.5f, 2.5f);
+	std::uniform_int_distribution<uint16_t> ing(0, 2);
+	float rand_x = distx(rng);
+	float rand_y = disty(rng);
+	ingre_index = ing(rng);
+
+	switch (ingre_index)
+	{
+	case Patty: {
+		Mesh mesh = patty_meshes->lookup("Cylinder");
+
+		auto newTrans = new Scene::Transform();
+		scene.drawables.emplace_back(newTrans);
+		Scene::Drawable& drawable = scene.drawables.back();
+
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.vao = patty_meshes_for_lit_color_texture_program;
+		drawable.pipeline.type = mesh.type;
+		drawable.pipeline.start = mesh.start;
+		drawable.pipeline.count = mesh.count;
+		//drawable.transform->parent = player.transform;
+		drawable.transform->position = glm::vec3(rand_x, rand_y, max_height);
+		ingredients.push_back({ drawable.transform , Patty, walkmesh->nearest_walk_point(drawable.transform->position) });
+		break;
+	}
+	case Cheese: {
+		Mesh mesh = cheese_meshes->lookup("Cube");
+
+		auto newTrans = new Scene::Transform();
+		scene.drawables.emplace_back(newTrans);
+		Scene::Drawable& drawable = scene.drawables.back();
+
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.vao = cheese_meshes_for_lit_color_texture_program;
+		drawable.pipeline.type = mesh.type;
+		drawable.pipeline.start = mesh.start;
+		drawable.pipeline.count = mesh.count;
+		drawable.transform->position = glm::vec3(rand_x, rand_y, max_height);
+		
+		ingredients.push_back({ drawable.transform , Cheese, walkmesh->nearest_walk_point(drawable.transform->position) });
+		break;
+	}
+	case Veggies: {
+		Mesh mesh = veggies_meshes->lookup("Plane");
+
+		auto newTrans = new Scene::Transform();
+		scene.drawables.emplace_back(newTrans);
+		Scene::Drawable& drawable = scene.drawables.back();
+
+		drawable.pipeline = lit_color_texture_program_pipeline;
+		drawable.pipeline.vao = cheese_meshes_for_lit_color_texture_program;
+		drawable.pipeline.type = mesh.type;
+		drawable.pipeline.start = mesh.start;
+		drawable.pipeline.count = mesh.count;
+		drawable.transform->position = glm::vec3(rand_x, rand_y, max_height);
+		//drawable.transform->parent = player.transform;.
+		ingredients.push_back({ drawable.transform , Veggies, walkmesh->nearest_walk_point(drawable.transform->position) });
+		break;
+	}
+	default:
+		assert(false && "Something's wrong");
+		break;
+	}
 	return;
+}
+
+void PlayMode::put_ingre_to_burger(uint8_t index) {
+	ingredients[index].ingre->parent = player.transform;
+	ingredients[index].ingre->position = glm::vec3(0.0f, 0.0f, max_height+height[ingredients[index].index]);
+	max_height += height[ingredients[index].index];
+	u_bun->position = glm::vec3(0.0f, 0.0f, max_height);
 }
 
 void PlayMode::add_walk_mesh(uint8_t n) {

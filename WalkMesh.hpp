@@ -7,6 +7,8 @@
 #include <string>
 #include <unordered_map>
 
+// Most TODO code below are created with ChatGPT with codes in the lesson
+
 //"WalkPoint" represents location on the WalkMesh as barycentric coordinates on a triangle:
 struct WalkPoint {
 	//indices of current triangle (in CCW order):
