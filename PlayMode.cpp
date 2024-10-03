@@ -427,7 +427,7 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		drawable.pipeline.type = mesh.type;
 		drawable.pipeline.start = mesh.start;
 		drawable.pipeline.count = mesh.count;
-		drawable.transform->position = glm::vec3(rand_x, rand_y, 0.4f);
+		drawable.transform->position = glm::vec3(rand_x, rand_y, 0.2f);
 
 		ingredients.push_back({ drawable.transform , Patty, walkmesh->nearest_walk_point(drawable.transform->position) });
 		break;
@@ -444,7 +444,7 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		drawable.pipeline.type = mesh.type;
 		drawable.pipeline.start = mesh.start;
 		drawable.pipeline.count = mesh.count;
-		drawable.transform->position = glm::vec3(rand_x, rand_y,0.4f);
+		drawable.transform->position = glm::vec3(rand_x, rand_y,0.2f);
 		
 		ingredients.push_back({ drawable.transform , Cheese, walkmesh->nearest_walk_point(drawable.transform->position) });
 		break;
@@ -461,8 +461,7 @@ void PlayMode::put_food_randomly(uint16_t ingre_index) {
 		drawable.pipeline.type = mesh.type;
 		drawable.pipeline.start = mesh.start;
 		drawable.pipeline.count = mesh.count;
-		drawable.transform->position = glm::vec3(rand_x, rand_y, 0.4f);
-		//drawable.transform->parent = player.transform;.
+		drawable.transform->position = glm::vec3(rand_x, rand_y, 0.2f);
 		ingredients.push_back({ drawable.transform , Veggies, walkmesh->nearest_walk_point(drawable.transform->position) });
 		break;
 	}
@@ -478,7 +477,7 @@ void PlayMode::put_ingre_to_burger(uint8_t index) {
 	ingredients[index].ingre->position = glm::vec3(0.0f, 0.0f, max_height+height[ingredients[index].index]);
 	max_height += height[ingredients[index].index];
 	u_bun->position = glm::vec3(0.0f, 0.0f, max_height);
-	player.camera->transform->position = glm::vec3(0.0f, -1.0f, max_height+ 0.3f);
+	player.camera->transform->position = glm::vec3(0.0f, -1.0f, max_height+ 0.2f);
 }
 
 void PlayMode::add_walk_mesh(uint8_t n) {
