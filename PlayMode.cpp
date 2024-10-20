@@ -478,6 +478,10 @@ void PlayMode::put_ingre_to_burger(uint8_t index) {
 	max_height += height[ingredients[index].index];
 	u_bun->position = glm::vec3(0.0f, 0.0f, max_height);
 	player.camera->transform->position = glm::vec3(0.0f, -1.0f, max_height+ 0.2f);
+
+	//Need to remove ingre from Ingredient
+	//Remove this line, player at (0,0) will explode ingredients
+	ingredients.erase(ingredients.begin() + index);
 }
 
 void PlayMode::add_walk_mesh(uint8_t n) {
